@@ -52,3 +52,36 @@ Estas tarefas exigem decisões de segurança ou de arquitetura.
 ## Gate de segurança
 
 Não publicar dados reais antes da revisão das políticas RLS.
+## Entrega de baixo risco
+
+A exportação dos dados locais foi adicionada ao formulário de configurações em `dist/app.js`.
+
+O controle cria `casa-prototype-v1.json` com o estado atual e a data da exportação.
+
+O controle usa um Blob local e revoga a URL temporária após o download.
+
+A alteração não usa Supabase, autenticação, rede ou chaves administrativas.
+
+A verificação `npm.cmd run check` passou.
+
+## Handoff para modelo robusto
+
+O próximo modelo recebe este repositório após a entrega de exportação local.
+
+O arquivo de entrada para a futura migração é `casa-prototype-v1.json`.
+
+Não existe projeto Supabase conectado e nenhuma chave real existe no repositório.
+
+O próximo modelo precisa concluir estas decisões antes da integração:
+
+- Aprovar o modelo de casas, membros, papéis e tabelas de negócio.
+- Definir a migração do JSON local para uma casa autenticada.
+- Escrever as políticas RLS e os testes de permissão e bloqueio.
+- Definir cadastro, confirmação, convite e recuperação de conta.
+- Definir SMTP, URLs de redirecionamento e proteção contra abuso.
+- Definir conflitos entre celulares e o limite do suporte offline.
+- Revisar privacidade, backups, logs e critérios de aceite público.
+
+Não publicar dados reais antes da revisão das políticas RLS.
+
+Não declarar sincronização antes do teste com dois usuários autenticados.
