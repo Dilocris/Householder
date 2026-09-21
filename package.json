@@ -1,0 +1,1 @@
+{"name":"casa-prototipo","private":true,"scripts":{"start":"node server.mjs","check":"node --check dist/app.js"}}
