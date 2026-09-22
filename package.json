@@ -1,1 +1,1 @@
-{"name":"casa-prototipo","private":true,"scripts":{"start":"node server.mjs","check":"node --check dist/app.js"}}
+{"name":"casa","private":true,"type":"module","scripts":{"start":"node server.mjs","check":"node --check dist/app.js && node --check dist/cloud.js && node --check dist/sw.js","build":"node scripts/build.mjs","test":"node --test tests/*.test.mjs"},"dependencies":{"@supabase/supabase-js":"2.57.4"},"devDependencies":{"@electric-sql/pglite":"0.3.10","esbuild":"0.25.10","jsdom":"^26.1.0"}}

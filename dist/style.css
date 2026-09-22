@@ -490,3 +490,10 @@ summary { cursor: pointer; min-height: 44px; padding: 12px 0; }
 }
 @media(max-width:380px) { .split { grid-template-columns: 1fr; } .form-actions button { flex: 1 1 auto; } .metrics { gap: 8px; } }
 @media(prefers-reduced-motion:reduce) { button { transition: none; } }
+
+.sync-bar { display:flex; flex-wrap:wrap; align-items:center; gap:8px; min-height:36px; margin-top:12px; color:var(--muted); font-size:12px; }
+.sync-bar .text-button { min-height:36px; font-size:12px; }
+.account-settings { border-top:1px solid var(--line); padding-top:16px; }
+main[inert] { opacity:.6; }
+
+.pwa-update{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);z-index:20;background:var(--primary);color:var(--on-primary);max-width:calc(100% - 32px)}

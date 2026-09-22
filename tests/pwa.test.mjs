@@ -1,0 +1,9 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import vm from 'node:vm';
+import {readFile} from 'node:fs/promises';
+const source=await readFile('dist/sw.js','utf8');
+function setup(){const events={},deleted=[],matched=[];let skipped=0;const context={URL,Response,self:{registration:{scope:'https://example.test/Householder/'},addEventListener:(name,fn)=>events[name]=fn,skipWaiting:()=>skipped++,clients:{claim:async()=>{}}},caches:{keys:async()=>['another-project-cache','casa-pwa-v1','casa-householder-old','casa-householder-__BUILD_ID__'],delete:async name=>deleted.push(name),open:async()=>({addAll:async()=>{},match:async request=>{matched.push(request);return new Response('cached')}})},fetch:async()=>new Response('network')};vm.runInNewContext(source,context);return {events,deleted,matched,skipped:()=>skipped};}
+test('service worker preserves unrelated origin caches',async()=>{const s=setup();let promise;s.events.activate({waitUntil:p=>promise=p});await promise;assert.deepEqual(s.deleted,['casa-pwa-v1','casa-householder-old'])});
+test('new worker waits for explicit update acceptance',async()=>{const s=setup();let promise;s.events.install({waitUntil:p=>promise=p});await promise;assert.equal(s.skipped(),0);s.events.message({data:{type:'ACTIVATE_UPDATE'}});assert.equal(s.skipped(),1)});
+test('navigation uses a coherent installed release and bypasses backend requests',async()=>{const s=setup();let response;s.events.fetch({request:{url:'https://example.test/Householder/?v=13',method:'GET',mode:'navigate'},respondWith:p=>response=p});assert.equal(await (await response).text(),'cached');assert.equal(s.matched[0],'https://example.test/Householder/index.html');let handled=false;s.events.fetch({request:{url:'https://test.supabase.co/rest/v1/household_records',method:'GET'},respondWith:()=>handled=true});assert.equal(handled,false)});
