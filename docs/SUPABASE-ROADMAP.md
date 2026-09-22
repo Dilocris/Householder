@@ -85,3 +85,12 @@ O próximo modelo precisa concluir estas decisões antes da integração:
 Não publicar dados reais antes da revisão das políticas RLS.
 
 Não declarar sincronização antes do teste com dois usuários autenticados.
+## PWA e publicação
+
+O site agora possui manifest, service worker, registro automático e ícones PNG.
+
+O workflow do GitHub Pages publica os arquivos PWA junto com o diretório `dist`.
+
+A instalação precisa de HTTPS, que o GitHub Pages fornece no endereço público.
+
+A instalação não cria autenticação ou sincronização entre dispositivos.

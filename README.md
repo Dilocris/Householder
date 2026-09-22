@@ -102,3 +102,12 @@ A remoção de categorias e a restauração dos itens passaram na verificação 
 Em uma janela de 390 pixels, a lista diária apresentou 312 pixels de altura e quatro eventos com rolagem.
 
 O documento `docs/PLANO-UX.md` descreve o produto pretendido. Este protótipo representa a etapa inicial de validação visual e de interação.
+## Instalação como PWA
+
+Abra o site publicado em HTTPS.
+
+Use a opção de instalar o aplicativo no menu do navegador.
+
+A primeira abertura precisa de conexão para baixar os arquivos do aplicativo.
+
+Os dados locais continuam separados por dispositivo até a integração com Supabase.
