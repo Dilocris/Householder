@@ -1,23 +1,23 @@
 # Casa: ativação do espaço compartilhado
 
-## Estado desta entrega
+## Estado em 23/09/2026
 
-O GitHub Pages hospeda o PWA. O build contém autenticação, convites, importação e sincronização por registro.
+O código da versão 6cddaf2 inclui contas separadas, registros compartilhados, correções para Android e leitura opcional do Google Calendar.
 
-Diego executou as duas migrações no projeto `texazhyvvhsqmboxjqis`. A versão publicada mantém o modo local até a nova publicação.
+A publicação do GitHub Pages passou no workflow 35816496727. O arquivo público release.json mostra a versão 5a16c1d0fa2a04d2.
 
-O banco possui testes locais com PostgreSQL em memória. A interface possui testes com duas sessões simuladas.
-
-Esses testes não substituem o aceite com duas contas no Supabase hospedado e dois celulares Android.
-
-## Evidência atual
+Diego informou que as duas contas acessam o mesmo espaço no Supabase. Ele não pôde testar a atualização automática após esta publicação.
 
 | Camada | Estado verificado |
 | --- | --- |
-| Código local | Duas migrações, importação atômica e 17 testes aprovados. |
-| Supabase hospedado | Diego informou `0` registros, três tabelas públicas com RLS e Realtime ativo. Autenticação ainda não foi testada. |
-| Publicação | `release.json` mostra `backendConfigured: false` e versão `47745239f53a94ec`. |
-| Celulares Android | Sem teste de duas contas ou aceite nos aparelhos. |
+| Código | 25 testes passaram localmente. O GitHub Actions aprovou a validação e a publicação. |
+| Supabase hospedado | As tabelas têm RLS. O Realtime inclui os registros. Duas contas acessam o mesmo espaço. |
+| Publicação | O GitHub Pages serve os arquivos da versão 15. O Supabase está configurado. O Google Calendar aguarda o Client ID. |
+| Celulares Android | Os dois usuários entraram. A atualização automática e as correções desta versão aguardam novo teste nos aparelhos. |
+
+O código consulta o servidor a cada dez segundos com o app visível. Ele também consulta ao retornar ao app.
+
+A leitura do Google Calendar existe no código. A ativação exige o Client ID e o teste nas duas contas Google.
 
 ## Configuração do Supabase
 
@@ -95,7 +95,7 @@ A lista de responsáveis usa os nomes únicos dos membros nesta versão. Altera�
 
 ## Limites restantes
 
-Notificações com o aplicativo fechado, integração Google Calendar, alterações de conta e edição offline continuam pendentes.
+Notificações com o aplicativo fechado, escrita no Google Calendar, alterações de conta e edição offline continuam pendentes.
 
 Os lembretes de WhatsApp ainda exigem o aplicativo aberto. Abrir o WhatsApp não envia a mensagem automaticamente.
 
