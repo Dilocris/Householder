@@ -5,6 +5,7 @@ import {PGlite} from '@electric-sql/pglite';
 const db=new PGlite();
 await db.exec(`create role anon; create role authenticated; create schema auth; create table auth.users(id uuid primary key); create function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid $$; grant usage on schema auth to authenticated; grant execute on function auth.uid() to authenticated;`);
 await db.exec(await readFile('supabase/migrations/202609210001_households.sql','utf8'));
+await db.exec(await readFile('supabase/migrations/202609230001_atomic_import.sql','utf8'));
 const a='00000000-0000-4000-8000-000000000001',b='00000000-0000-4000-8000-000000000002',c='00000000-0000-4000-8000-000000000003';
 await db.query('insert into auth.users values ($1),($2),($3)',[a,b,c]);
 async function asUser(id,sql,params=[]){await db.exec('reset role');await db.query("select set_config('request.jwt.claim.sub',$1,false)",[id]);await db.exec('set role authenticated');return db.query(sql,params);}
@@ -45,5 +46,16 @@ test('tombstones stop stale resurrection after delete',async()=>{
  await asUser(a,'select public.apply_household_changes($1,$2,$3)',[house,crypto.randomUUID(),JSON.stringify([{...item,expected_revision:2,deleted:true,data:null}])]);
  await assert.rejects(asUser(b,'select public.apply_household_changes($1,$2,$3)',[house,crypto.randomUUID(),JSON.stringify([{...item,expected_revision:2}])]),/revision_conflict/);
  assert.equal((await asUser(b,'select deleted from public.household_records')).rows[0].deleted,true);
+});
+test('import accepts one empty-house batch, replays it, and rejects a different batch',async()=>{
+ const first=crypto.randomUUID(),second=crypto.randomUUID();
+ const milk={...item,item_id:'import-milk',data:{id:'import-milk',name:'Leite'}};
+ const bread={...item,item_id:'import-bread',data:{id:'import-bread',name:'Pao'}};
+ await asUser(c,'select public.import_household_changes($1,$2,$3)',[other,first,JSON.stringify([milk])]);
+ await asUser(c,'select public.import_household_changes($1,$2,$3)',[other,first,JSON.stringify([milk])]);
+ await assert.rejects(asUser(c,'select public.import_household_changes($1,$2,$3)',[other,second,JSON.stringify([bread])]),/house_not_empty/);
+ await assert.rejects(asUser(a,'select public.import_household_changes($1,$2,$3)',[other,crypto.randomUUID(),JSON.stringify([bread])]),/access_denied/);
+ const rows=(await asUser(c,'select item_id,revision from public.household_records where household_id=$1',[other])).rows;
+ assert.deepEqual(rows,[{item_id:'import-milk',revision:1}]);
 });
 after(()=>db.close());

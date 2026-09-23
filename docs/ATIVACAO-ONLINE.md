@@ -4,18 +4,27 @@
 
 O GitHub Pages hospeda o PWA. O build contém autenticação, convites, importação e sincronização por registro.
 
-O projeto Supabase ainda não existe. A versão publicada mantém o modo local enquanto as variáveis públicas estão vazias.
+Diego informou o projeto Supabase `texazhyvvhsqmboxjqis`. A migração hospedada ainda não foi verificada. A versão publicada mantém o modo local enquanto as variáveis públicas estão vazias.
 
 O banco possui testes locais com PostgreSQL em memória. A interface possui testes com duas sessões simuladas.
 
 Esses testes não substituem o aceite com duas contas no Supabase hospedado e dois celulares Android.
 
+## Evidência atual
+
+| Camada | Estado verificado |
+| --- | --- |
+| Código local | Duas migrações, importação atômica e 16 testes aprovados. |
+| Supabase hospedado | Projeto informado por Diego. Migrações, autenticação e Realtime sem verificação. |
+| Publicação | `release.json` mostra `backendConfigured: false` e versão `47745239f53a94ec`. |
+| Celulares Android | Sem teste de duas contas ou aceite nos aparelhos. |
+
 ## Configuração do Supabase
 
-1. Crie um projeto na conta do proprietário.
-2. Selecione a região disponível mais próxima da família.
-3. Abra o SQL Editor.
-4. Execute `supabase/migrations/202609210001_households.sql` uma única vez.
+1. Abra o [projeto informado](https://supabase.com/dashboard/project/texazhyvvhsqmboxjqis).
+2. Verifique o esquema e os registros existentes antes de executar SQL.
+3. Execute `supabase/migrations/202609210001_households.sql` somente se a migração inicial não existir.
+4. Execute `supabase/migrations/202609230001_atomic_import.sql` depois da migração inicial.
 5. Configure o Site URL como `https://dilocris.github.io/Householder/`.
 6. Adicione esse mesmo endereço aos redirecionamentos permitidos.
 7. Ative a autenticação por e-mail e senha.

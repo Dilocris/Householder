@@ -1,10 +1,10 @@
 # Estado da integração Supabase
 
-A implementação está em `dist/cloud.js`, `dist/sync-core.js` e `supabase/migrations/202609210001_households.sql`.
+A implementação está em `dist/cloud.js`, `dist/sync-core.js` e nas migrações em `supabase/migrations/`. A segunda migração impede duas importações para o mesmo espaço.
 
 O build usa as variáveis públicas `SUPABASE_URL` e `SUPABASE_PUBLISHABLE_KEY`. Sem essas variáveis, o aplicativo permanece local.
 
-O projeto Supabase ainda precisa ser criado. O roteiro de ativação está em [ATIVACAO-ONLINE.md](ATIVACAO-ONLINE.md).
+Diego informou o projeto `texazhyvvhsqmboxjqis`. A aplicação das migrações e o acesso hospedado ainda não foram verificados. O roteiro está em [ATIVACAO-ONLINE.md](ATIVACAO-ONLINE.md).
 
 ## Concluído no código
 
@@ -21,7 +21,7 @@ O projeto Supabase ainda precisa ser criado. O roteiro de ativação está em [A
 
 ## Pendente para produção compartilhada
 
-- Criar projeto, aplicar migração e configurar autenticação e e-mail.
+- Verificar o projeto informado, aplicar as duas migrações e configurar autenticação e e-mail.
 - Configurar variáveis públicas no GitHub Actions.
 - Executar o aceite com duas contas reais e dois aparelhos.
 - Verificar isolamento com uma conta de outra família no ambiente hospedado.
