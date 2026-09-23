@@ -15,4 +15,27 @@ function backend(){const rows=[],listeners=[],operations=new Set();return {rows,
 function browser(client){const dom=new JSDOM(html,{url:'https://example.test/Householder/#mercado',runScripts:'outside-only'}),w=dom.window;w.structuredClone=structuredClone;w.matchMedia=()=>({matches:false,addEventListener(){}});w.scrollTo=()=>{};w.HTMLDialogElement.prototype.showModal=function(){this.open=true};w.HTMLDialogElement.prototype.close=function(){this.open=false;this.dispatchEvent(new w.Event('close'))};w.testObservers=[];const Observer=w.MutationObserver;w.MutationObserver=class extends Observer{constructor(callback){super(callback);w.testObservers.push(this)}};w.testClient=client;w.eval(app);w.eval(cloud);return dom;}
 test('signed-out shared build hides local sample data and disables edits',async()=>{const b=browser(backend().client(null));await settle();assert.equal(b.window.document.querySelector('main').inert,true);assert.equal(b.window.Casa.snapshot().items.length,0);assert.match(b.window.document.querySelector('.sync-bar').textContent,/Entre/);b.window.testObservers.forEach(o=>o.disconnect());b.window.close()});
 test('two sessions see per-item changes without full-state overwrite',async()=>{const db=backend(),a=browser(db.client('a')),b=browser(db.client('b'));await settle();const form=a.window.document.querySelector('#add-item');form.elements.name.value='Teste leite';form.dispatchEvent(new a.window.Event('submit',{bubbles:true,cancelable:true}));await settle();assert.equal(db.rows.length,1);assert.equal(b.window.Casa.snapshot().items[0].name,'Teste leite');assert.equal(a.window.document.querySelector('main').inert,false);a.window.testObservers.forEach(o=>o.disconnect());a.window.close();b.window.testObservers.forEach(o=>o.disconnect());b.window.close()});
+test('delayed account response cannot restore records after sign-out',async()=>{
+ const db=backend(),client=db.client('a');
+ db.rows.push({kind:'items',item_id:'private',data:{id:'private',name:'Privado'},revision:1,deleted:false});
+ let authEvent,resolveMember;
+ client.auth.onAuthStateChange=fn=>{authEvent=fn};
+ const originalFrom=client.from;
+ client.from=function(table){
+  const query=originalFrom.call(this,table);
+  if(table==='household_members')query.maybeSingle=()=>new Promise(resolve=>{resolveMember=resolve});
+  return query;
+ };
+ const b=browser(client);
+ await settle();
+ assert.equal(typeof resolveMember,'function');
+ authEvent('SIGNED_OUT');
+ resolveMember({data:{household_id:'h',display_name:'a'}});
+ await settle();
+ assert.equal(b.window.Casa.snapshot().items.length,0);
+ assert.equal(b.window.document.querySelector('main').inert,true);
+ assert.match(b.window.document.querySelector('.sync-bar').textContent,/Sessão encerrada/);
+ b.window.testObservers.forEach(o=>o.disconnect());
+ b.window.close();
+});
 test('stale edit keeps the shared value and exposes conflict recovery',async()=>{const db=backend();db.rows.push({kind:'items',item_id:'milk',data:{id:'milk',name:'Leite',done:false},revision:1,deleted:false});const a=browser(db.client('a'));await settle();db.rows[0].revision=2;db.rows[0].data.name='Leite atualizado';const checkbox=a.window.document.querySelector('[data-item="milk"]');checkbox.checked=true;checkbox.dispatchEvent(new a.window.Event('change',{bubbles:true}));await settle();assert.equal(db.rows[0].data.name,'Leite atualizado');assert.equal(db.rows[0].data.done,false);assert.match(a.window.document.querySelector('.sync-bar').textContent,/outro aparelho/);a.window.testObservers.forEach(o=>o.disconnect());a.window.close()});

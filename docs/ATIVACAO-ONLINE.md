@@ -14,7 +14,7 @@ Esses testes não substituem o aceite com duas contas no Supabase hospedado e do
 
 | Camada | Estado verificado |
 | --- | --- |
-| Código local | Duas migrações, importação atômica e 16 testes aprovados. |
+| Código local | Duas migrações, importação atômica e 17 testes aprovados. |
 | Supabase hospedado | Projeto informado por Diego. Migrações, autenticação e Realtime sem verificação. |
 | Publicação | `release.json` mostra `backendConfigured: false` e versão `47745239f53a94ec`. |
 | Celulares Android | Sem teste de duas contas ou aceite nos aparelhos. |
