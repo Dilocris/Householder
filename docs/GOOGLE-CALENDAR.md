@@ -6,7 +6,9 @@ O Casa lê uma agenda Google que aparece nas duas contas. Cada pessoa conecta su
 
 O Casa não altera eventos Google. Ele não copia esses eventos para o Supabase.
 
-A conexão ainda está inativa. Falta criar um OAuth Client ID no Google Cloud e informar esse ID ao Codex.
+O Client ID público está configurado no site. A conexão ainda exige autorização em cada celular.
+
+O site informa googleCalendarConfigured: true. O acesso real à agenda ainda exige um teste nas duas contas Google.
 
 ## Antes de começar
 
@@ -110,9 +112,11 @@ O endereço de origem não inclui /Householder/. O fluxo do Casa não precisa de
 
 Não copie o Client Secret. Não envie senha, token de acesso ou chave administrativa.
 
-## 5. Enviar o ID ao Codex
+## 5. Publicar o Client ID
 
-Envie somente o OAuth Client ID. O Codex configurará a variável pública GOOGLE_CLIENT_ID no GitHub e verificará a publicação.
+O Client ID já está na variável pública GOOGLE_CLIENT_ID do GitHub. A publicação do site passou no workflow 35818045976.
+
+O arquivo público release.json informa googleCalendarConfigured: true na versão 0472f06eba5ef184.
 
 O Client ID identifica o aplicativo. Ele não concede acesso à agenda sem o consentimento de cada pessoa.
 
@@ -127,6 +131,7 @@ O Client ID identifica o aplicativo. Ele não concede acesso à agenda sem o con
 7. Selecione a agenda compartilhada na lista Agenda Google.
 8. Repita os passos no segundo celular.
 9. Confirme que um evento existente aparece na Agenda do Casa.
+10. Se o evento não aparecer, registre a mensagem exata exibida no aplicativo.
 
 O Casa guarda o ID da agenda escolhida neste aparelho. Ele mantém o token de acesso somente na memória.
 

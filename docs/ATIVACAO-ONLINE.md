@@ -4,7 +4,7 @@
 
 O código da versão 6cddaf2 inclui contas separadas, registros compartilhados, correções para Android e leitura opcional do Google Calendar.
 
-A publicação do GitHub Pages passou no workflow 35816496727. O arquivo público release.json mostra a versão 5a16c1d0fa2a04d2.
+A publicação do GitHub Pages passou no workflow 35818045976. O arquivo público release.json mostra a versão 0472f06eba5ef184.
 
 Diego informou que as duas contas acessam o mesmo espaço no Supabase. Ele não pôde testar a atualização automática após esta publicação.
 
@@ -12,12 +12,12 @@ Diego informou que as duas contas acessam o mesmo espaço no Supabase. Ele não 
 | --- | --- |
 | Código | 25 testes passaram localmente. O GitHub Actions aprovou a validação e a publicação. |
 | Supabase hospedado | As tabelas têm RLS. O Realtime inclui os registros. Duas contas acessam o mesmo espaço. |
-| Publicação | O GitHub Pages serve os arquivos da versão 15. O Supabase está configurado. O Google Calendar aguarda o Client ID. |
-| Celulares Android | Os dois usuários entraram. A atualização automática e as correções desta versão aguardam novo teste nos aparelhos. |
+| Publicação | O GitHub Pages serve a versão 0472f06eba5ef184. Supabase e Client ID do Google estão configurados. |
+| Celulares Android | Os dois usuários entraram. A atualização automática e as correções desta versão aguardam novo teste nos aparelhos. O acesso real à agenda Google também aguarda teste. |
 
 O código consulta o servidor a cada dez segundos com o app visível. Ele também consulta ao retornar ao app.
 
-A leitura do Google Calendar existe no código. A ativação exige o Client ID e o teste nas duas contas Google.
+A leitura do Google Calendar existe no código. O Client ID está publicado. Cada pessoa precisa autorizar a própria conta Google.
 
 ## Configuração do Supabase
 
