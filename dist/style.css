@@ -497,3 +497,9 @@ summary { cursor: pointer; min-height: 44px; padding: 12px 0; }
 main[inert] { opacity:.6; }
 
 .pwa-update{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);z-index:20;background:var(--primary);color:var(--on-primary);max-width:calc(100% - 32px)}
+
+.date-field{display:flex;gap:8px;align-items:center;width:100%}
+.date-field input{flex:1;min-width:0}
+.form-fields .date-picker-button{flex:none;min-width:50px;min-height:50px;padding:0;border:1px solid var(--outline);border-radius:10px;background:var(--surface);color:var(--text);font-size:22px}
+.plan-owner-filter{display:flex;align-items:center;gap:8px;margin:12px 0;font-size:14px}
+.plan-owner-filter select{min-height:44px;min-width:150px;padding:8px;border:1px solid var(--outline);border-radius:10px;background:var(--surface);color:var(--text)}

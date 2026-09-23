@@ -39,3 +39,59 @@ test('delayed account response cannot restore records after sign-out',async()=>{
  b.window.close();
 });
 test('stale edit keeps the shared value and exposes conflict recovery',async()=>{const db=backend();db.rows.push({kind:'items',item_id:'milk',data:{id:'milk',name:'Leite',done:false},revision:1,deleted:false});const a=browser(db.client('a'));await settle();db.rows[0].revision=2;db.rows[0].data.name='Leite atualizado';const checkbox=a.window.document.querySelector('[data-item="milk"]');checkbox.checked=true;checkbox.dispatchEvent(new a.window.Event('change',{bubbles:true}));await settle();assert.equal(db.rows[0].data.name,'Leite atualizado');assert.equal(db.rows[0].data.done,false);assert.match(a.window.document.querySelector('.sync-bar').textContent,/outro aparelho/);a.window.testObservers.forEach(o=>o.disconnect());a.window.close()});
+test('profile, calendar picker, replenishment removal and owner filter are available',async()=>{
+ const b=browser(backend().client('a'));await settle();
+ const w=b.window,doc=w.document;try{
+ assert.equal(doc.querySelector('#profile').textContent,'A');
+ const data=w.Casa.snapshot();
+ data.products.push({id:'p1',name:'Sabão',days:30,bought:'2026-09-01'});
+ data.decks=[{id:'d1',name:'Casa',description:''}];
+ data.tasks=[{id:'t1',deckId:'d1',name:'Tarefa A',owner:'a',done:false},{id:'t2',deckId:'d1',name:'Tarefa B',owner:'b',done:false}];
+ w.Casa.replace(data);
+ assert.ok(doc.querySelector('[data-product-delete="p1"]'));
+ doc.querySelector('[data-product-delete="p1"]').click();await settle();
+ assert.ok(doc.querySelector('#product-delete'));
+ assert.equal(doc.querySelector('#product-edit input[name="bought"]').type,'date');
+ assert.ok(doc.querySelector('.date-picker-button'));
+ doc.querySelector('#dialog').close();
+ w.location.hash='#planos';await settle();
+ const filter=doc.querySelector('#plan-owner-filter');assert.ok(filter);
+ filter.value='a';filter.dispatchEvent(new w.Event('change'));
+ doc.querySelector('[data-deck-view="all"]').click();
+ assert.match(doc.querySelector('main').textContent,/Tarefa A/);
+ assert.doesNotMatch(doc.querySelector('main').textContent,/Tarefa B/);
+ }finally{b.window.testObservers.forEach(o=>o.disconnect());b.window.close()}
+});
+test('returning to the app refreshes records without a page reload',async()=>{
+ const db=backend(),b=browser(db.client('a'));await settle();
+ try{
+  db.rows.push({kind:'items',item_id:'new',data:{id:'new',name:'Atualizado no outro celular',done:false},revision:1,deleted:false});
+  b.window.dispatchEvent(new b.window.Event('focus'));
+  await settle();
+  assert.equal(b.window.Casa.snapshot().items[0].name,'Atualizado no outro celular');
+ }finally{b.window.testObservers.forEach(o=>o.disconnect());b.window.close()}
+});
+test('back returns from a direct section entry to Today',async()=>{
+ const b=browser(backend().client('a'));await settle();
+ try{
+  assert.equal(b.window.location.hash,'#mercado');
+  b.window.history.back();
+  await new Promise(resolve=>setTimeout(resolve,80));
+  assert.equal(b.window.location.hash,'#hoje');
+  assert.match(b.window.document.querySelector('main h1').textContent,/Hoje/);
+ }finally{b.window.testObservers.forEach(o=>o.disconnect());b.window.close()}
+});
+test('replenishment deletion writes a tombstone without removing purchases',async()=>{
+ const db=backend();
+ db.rows.push({kind:'products',item_id:'p1',data:{id:'p1',name:'Sabão',days:30},revision:1,deleted:false});
+ db.rows.push({kind:'items',item_id:'i1',data:{id:'i1',name:'Sabão',track:true,done:true},revision:1,deleted:false});
+ const b=browser(db.client('a'));await settle();
+ try{
+  b.window.document.querySelector('[data-product-delete="p1"]').click();
+  b.window.document.querySelector('#product-delete').click();
+  await settle();
+  assert.equal(db.rows.find(row=>row.kind==='products').deleted,true);
+  assert.equal(db.rows.find(row=>row.kind==='items').deleted,false);
+  assert.equal(b.window.Casa.snapshot().items.length,1);
+ }finally{b.window.testObservers.forEach(o=>o.disconnect());b.window.close()}
+});
