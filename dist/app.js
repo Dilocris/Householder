@@ -20,6 +20,7 @@ const heading=(title,desc,action='')=>{const pageIcon={Hoje:'hoje',Agenda:'agend
 const button=(label,action)=>`<button class="primary" data-action="${action}">${icon('plus')}${label}</button>`;
 const events=[{day:base,time:'08:00',title:'Café da manhã juntos',local:'Em casa',area:'Família'},{day:base,time:'10:30',title:'Passar no mercado',local:'Lista da semana',area:'Casa'},{day:base,time:'19:00',title:'Preparar a próxima semana',local:'Em casa',area:'Família'},{day:base,time:'16:00',title:'Passeio em família',local:'Praia da Costa',area:'Família'},{day:dateAt(1),time:'09:30',title:'Consulta do pequeno',local:'Consultório · exemplo',area:'Filho'},{day:dateAt(2),time:'18:00',title:'Organizar a semana',local:'Em casa',area:'Família'}];
 events.sort((a,b)=>(a.day+a.time).localeCompare(b.day+b.time));
+let googleEvents=[];
 function billRow(b){return `<div class="row"><div class="icon-box">${icon(b.paid?'check':'financas')}</div><div class="row-content"><button class="expense-title" data-expense-edit="${b.id}">${esc(b.name)}</button><span class="row-meta">${b.paid?'Pago':'Vence'} ${niceDate(b.date)} · ${esc(b.category)}${b.paid?' · '+esc(b.payer||'Diego'):''}</span></div><span class="money">${money(b.amount)}</span>${!b.paid?`<button class="round" data-pay="${b.id}" aria-label="Marcar ${esc(b.name)} como pago">${icon('check')}</button>`:''}</div>`}
 function taskRow(t){return `<div class="row"><label class="check-label"><input class="check" type="checkbox" ${t.done?'checked':''} data-task="${t.id}" aria-label="Concluir ${esc(t.name)}"></label><div class="row-content"><span class="row-title">${esc(t.name)}</span><span class="row-meta">${esc(t.area)} · ${esc(t.owner)}${t.due?' · Até '+niceDate(t.due):''}</span></div></div>`}
 function home(){let unpaid=state.bills.filter(b=>!b.paid&&(b.type||'expense')==='expense'),count=state.items.filter(i=>!i.done).length;return heading('Hoje',today.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'}))+`<div class="grid"><div class="stack">${todayEvents()}<section class="card"><div class="card-head"><h2>Tarefas</h2><button class="text-button" data-action="planos">Ver todos</button></div>${state.tasks.slice(0,3).map(taskRow).join('')}</section></div><div class="stack"><section class="card"><div class="card-head"><h2>Contas próximas</h2><span class="pill amber">${unpaid.length} pendentes</span></div>${unpaid.slice(0,2).map(billRow).join('')||'<p>Nenhuma conta pendente.</p>'}<button class="text-button" data-action="financas">Ver o mês completo →</button></section><section class="card"><div class="card-head"><h2>Mercado</h2>${icon('mercado')}</div><p>${count} itens na lista compartilhada.</p><button class="primary" data-action="mercado">Abrir lista</button></section></div></div>`}
@@ -93,8 +94,9 @@ function normalizePhone(value) {
  return /^[1-9]\d{7,14}$/.test(number) ? number : null;
 }
 function scheduledEvents() {
- for (let n = events.length - 1; n >= 0; n--) if (events[n].messageId || events[n].localEventId) events.splice(n, 1);
+ for (let n = events.length - 1; n >= 0; n--) if (events[n].messageId || events[n].localEventId || events[n].googleId) events.splice(n, 1);
  for (const event of state.localEvents || []) events.push({...event,day:event.date,localEventId:event.id});
+ for (const event of googleEvents) events.push(event);
  for (const m of state.messages || []) events.push({day:m.date,time:m.time,title:`Mensagem para ${m.contact || '+' + m.phone}`,local:`${m.assignee} · ${m.sent ? 'Envio confirmado' : 'A enviar'}`,area:'Mensagem',messageId:m.id});
  events.sort((a,b)=>(a.day+(a.allDay?'':a.time||'')).localeCompare(b.day+(b.allDay?'':b.time||'')));
 }
@@ -110,7 +112,7 @@ function messageForm(id) {
  <label>Mensagem<textarea name="text" required maxlength="4000" rows="4" placeholder="Escreva a mensagem para enviar depois.">${esc(m.text)}</textarea></label>
  <div class="split"><label>Data<input type="date" name="date" value="${esc(m.date)}" required></label><label>Horário<input type="time" name="time" value="${esc(m.time)}" required></label></div>
  <label>Responsável<select name="assignee">${familyNames.map(p=>`<option ${m.assignee===p?'selected':''}>${p}</option>`).join('')}</select></label>
- <p class="helper">Horário deste aparelho. O aviso aparecerá no dia agendado.</p>
+ <p class="helper">O Casa não envia notificações neste momento. Abra a Agenda para ver o agendamento.</p>
  <p id="message-error" class="form-error" role="alert"></p><div class="form-actions"><button class="primary">Salvar agendamento</button></div></form>`);
  const form=$('#message-form');
  setupContactPicker(form);
@@ -133,7 +135,7 @@ function messageDetail(id) {
 const originalAgenda=agenda;
 agenda=function(){return originalAgenda().replace(heading('Agenda',''),heading('Agenda','',`<div class="agenda-actions">${button('Agendar evento','schedule-event')}<button class="secondary" data-action="schedule-message">${icon('plus')}Agendar mensagem</button></div>`))};
 const originalBind=bind;
-bind=function(){originalBind();document.querySelectorAll('[data-event]').forEach(b=>{const e=events[Number(b.dataset.event)];if(e?.messageId)b.onclick=()=>messageDetail(e.messageId);else if(e?.localEventId)b.onclick=()=>localEventDetail(e.localEventId)})};
+bind=function(){originalBind();document.querySelectorAll('[data-event]').forEach(b=>{const e=events[Number(b.dataset.event)];if(e?.messageId)b.onclick=()=>messageDetail(e.messageId);else if(e?.localEventId)b.onclick=()=>localEventDetail(e.localEventId);else if(e?.googleId)b.onclick=()=>openModal(esc(e.title),'<p>'+niceDate(e.day)+' · '+esc(e.allDay?'Dia inteiro':e.time)+'</p><p>'+esc(e.local||'Google Calendar')+'</p><p class="helper">Evento do Google. Abra o Google Calendar para editar.</p><a class="button-link" href="https://calendar.google.com/calendar/u/0/r" target="_blank" rel="noopener">Abrir Google Calendar</a>')})};
 const originalRender=render;
 render=function(){scheduledEvents();originalRender()};
 actions['schedule-message']=()=>messageForm();
@@ -312,6 +314,7 @@ window.Casa = {
  modal:openModal,
  toast,
  setMembers:names=>{familyNames=names;owners=selected=>['Sem responsável',...names].map(name=>`<option ${name===selected?'selected':''}>${esc(name)}</option>`).join('')},
+ setGoogleEvents:value=>{googleEvents=Array.isArray(value)?value:[];render()},
  setViewer:name=>{reminderViewer=name||'';const avatar=document.querySelector('#profile');avatar.textContent=name?.trim()?.charAt(0).toLocaleUpperCase('pt-BR')||'•';avatar.setAttribute('aria-label',name?'Configurações de '+name:'Abrir configurações')},
  isOnline:()=>Boolean(cloudAdapter?.enabled),
  configure:adapter=>{cloudAdapter=adapter;if(adapter.enabled)events.length=0}
@@ -323,5 +326,5 @@ commit=function(fn,text){if(!cloudAdapter?.enabled)return commitLocal(fn,text);f
 const renderLocal=render;
 render=function(){renderLocal();cloudAdapter?.afterRender()};
 const settingsLocal=settingsModal;
-settingsModal=function(){settingsLocal();cloudAdapter?.settings(document.querySelector('#settings-form'))};
+settingsModal=function(){settingsLocal();const form=document.querySelector('#settings-form');cloudAdapter?.settings(form);window.GoogleCalendar?.settings(form)};
 document.querySelector('#profile').onclick=settingsModal;

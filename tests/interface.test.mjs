@@ -95,3 +95,14 @@ test('replenishment deletion writes a tombstone without removing purchases',asyn
   assert.equal(b.window.Casa.snapshot().items.length,1);
  }finally{b.window.testObservers.forEach(o=>o.disconnect());b.window.close()}
 });
+test('Google events appear in Agenda without entering shared records',async()=>{
+ const db=backend(),b=browser(db.client('a'));await settle();
+ try{
+  b.window.location.hash='#agenda';await settle();
+  b.window.Casa.setGoogleEvents([{googleId:'g1',day:'2026-09-24',time:'10:00',title:'Evento da família',local:'Google Calendar',area:'Google'}]);
+  assert.match(b.window.document.querySelector('main').textContent,/Evento da família/);
+  assert.equal(db.rows.length,0);
+  b.window.Casa.setGoogleEvents([]);
+  assert.doesNotMatch(b.window.document.querySelector('main').textContent,/Evento da família/);
+ }finally{b.window.testObservers.forEach(o=>o.disconnect());b.window.close()}
+});

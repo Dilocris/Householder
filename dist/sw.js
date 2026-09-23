@@ -1,6 +1,6 @@
 const VERSION = 'casa-householder-__BUILD_ID__';
 const BASE = new URL('./', self.registration.scope);
-const ASSETS = ['./','./index.html','./app.js?v=14','./style.css?v=14','./cloud.js','./pwa-register.js','./manifest.webmanifest','./icon.svg','./icon-192.png','./icon-512.png'].map(path=>new URL(path,BASE).href);
+const ASSETS = ['./','./index.html','./app.js?v=15','./style.css?v=15','./cloud.js','./google-calendar.js','./pwa-register.js','./manifest.webmanifest','./icon.svg','./icon-192.png','./icon-512.png'].map(path=>new URL(path,BASE).href);
 self.addEventListener('install',event=>event.waitUntil(caches.open(VERSION).then(cache=>cache.addAll(ASSETS))));
 self.addEventListener('message',event=>{if(event.data?.type==='ACTIVATE_UPDATE')self.skipWaiting()});
 self.addEventListener('activate',event=>event.waitUntil((async()=>{
