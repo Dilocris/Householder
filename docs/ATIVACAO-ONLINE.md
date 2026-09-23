@@ -4,7 +4,7 @@
 
 O GitHub Pages hospeda o PWA. O build contém autenticação, convites, importação e sincronização por registro.
 
-Diego informou o projeto Supabase `texazhyvvhsqmboxjqis`. A migração hospedada ainda não foi verificada. A versão publicada mantém o modo local enquanto as variáveis públicas estão vazias.
+Diego executou as duas migrações no projeto `texazhyvvhsqmboxjqis`. A versão publicada mantém o modo local até a nova publicação.
 
 O banco possui testes locais com PostgreSQL em memória. A interface possui testes com duas sessões simuladas.
 
@@ -15,7 +15,7 @@ Esses testes não substituem o aceite com duas contas no Supabase hospedado e do
 | Camada | Estado verificado |
 | --- | --- |
 | Código local | Duas migrações, importação atômica e 17 testes aprovados. |
-| Supabase hospedado | Projeto informado por Diego. Migrações, autenticação e Realtime sem verificação. |
+| Supabase hospedado | Diego informou `0` registros, três tabelas públicas com RLS e Realtime ativo. Autenticação ainda não foi testada. |
 | Publicação | `release.json` mostra `backendConfigured: false` e versão `47745239f53a94ec`. |
 | Celulares Android | Sem teste de duas contas ou aceite nos aparelhos. |
 

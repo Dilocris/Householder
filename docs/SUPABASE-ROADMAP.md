@@ -4,7 +4,7 @@ A implementação está em `dist/cloud.js`, `dist/sync-core.js` e nas migraçõe
 
 O build usa as variáveis públicas `SUPABASE_URL` e `SUPABASE_PUBLISHABLE_KEY`. Sem essas variáveis, o aplicativo permanece local.
 
-Diego informou o projeto `texazhyvvhsqmboxjqis`. A aplicação das migrações e o acesso hospedado ainda não foram verificados. O roteiro está em [ATIVACAO-ONLINE.md](ATIVACAO-ONLINE.md).
+Diego executou as migrações no projeto `texazhyvvhsqmboxjqis`. A consulta hospedada retornou três tabelas públicas com RLS e Realtime ativo. O roteiro está em [ATIVACAO-ONLINE.md](ATIVACAO-ONLINE.md).
 
 ## Concluído no código
 
@@ -21,7 +21,7 @@ Diego informou o projeto `texazhyvvhsqmboxjqis`. A aplicação das migrações e
 
 ## Pendente para produção compartilhada
 
-- Verificar o projeto informado, aplicar as duas migrações e configurar autenticação e e-mail.
+- Configurar autenticação e e-mail no projeto informado.
 - Configurar variáveis públicas no GitHub Actions.
 - Executar o aceite com duas contas reais e dois aparelhos.
 - Verificar isolamento com uma conta de outra família no ambiente hospedado.

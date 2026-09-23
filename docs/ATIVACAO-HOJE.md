@@ -2,7 +2,7 @@
 
 ## Estado
 
-O código local inclui duas migrações. Os testes locais passaram. A versão pública ainda informa `backendConfigured: false`.
+Diego executou as duas migrações no projeto hospedado. A consulta retornou três tabelas públicas com RLS e Realtime ativo. A versão pública ainda informa `backendConfigured: false`.
 
 O projeto informado é `texazhyvvhsqmboxjqis`. A URL pública é `https://texazhyvvhsqmboxjqis.supabase.co`.
 
